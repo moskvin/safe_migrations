@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     safe_migrations (1.0.0)
-      activerecord (>= 7.2)
+      activerecord (>= 7.0)
 
 GEM
   remote: https://rubygems.org/

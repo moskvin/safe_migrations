@@ -53,8 +53,8 @@ module SafeMigrations
         create_table(table, **options, &block) unless table_exists?(table)
       end
 
-      def safe_drop_table(table)
-        drop_table(table, if_exists: true) if table_exists?(table)
+      def safe_drop_table(table, **)
+        drop_table(table, if_exists: true, **) if table_exists?(table)
       end
 
       def safe_add_foreign_key(from_table, to_table, **options)
