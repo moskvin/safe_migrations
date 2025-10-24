@@ -1,0 +1,124 @@
+PATH
+  remote: .
+  specs:
+    safe_migrations (1.0.0)
+      activerecord (>= 7.2)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activemodel (8.1.0)
+      activesupport (= 8.1.0)
+    activerecord (8.1.0)
+      activemodel (= 8.1.0)
+      activesupport (= 8.1.0)
+      timeout (>= 0.4.0)
+    activesupport (8.1.0)
+      base64
+      bigdecimal
+      concurrent-ruby (~> 1.0, >= 1.3.1)
+      connection_pool (>= 2.2.5)
+      drb
+      i18n (>= 1.6, < 2)
+      json
+      logger (>= 1.4.2)
+      minitest (>= 5.1)
+      securerandom (>= 0.3)
+      tzinfo (~> 2.0, >= 2.0.5)
+      uri (>= 0.13.1)
+    ast (2.4.3)
+    base64 (0.3.0)
+    bigdecimal (3.3.1)
+    concurrent-ruby (1.3.5)
+    connection_pool (2.5.4)
+    diff-lcs (1.6.2)
+    drb (2.2.3)
+    i18n (1.14.7)
+      concurrent-ruby (~> 1.0)
+    json (2.15.1)
+    language_server-protocol (3.17.0.5)
+    lint_roller (1.1.0)
+    logger (1.7.0)
+    mini_portile2 (2.8.9)
+    minitest (5.26.0)
+    parallel (1.27.0)
+    parser (3.3.9.0)
+      ast (~> 2.4.1)
+      racc
+    prism (1.6.0)
+    racc (1.8.1)
+    rainbow (3.1.1)
+    rake (10.5.0)
+    regexp_parser (2.11.3)
+    rspec (3.13.2)
+      rspec-core (~> 3.13.0)
+      rspec-expectations (~> 3.13.0)
+      rspec-mocks (~> 3.13.0)
+    rspec-core (3.13.6)
+      rspec-support (~> 3.13.0)
+    rspec-expectations (3.13.5)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.13.0)
+    rspec-mocks (3.13.6)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.13.0)
+    rspec-support (3.13.6)
+    rubocop (1.81.6)
+      json (~> 2.3)
+      language_server-protocol (~> 3.17.0.2)
+      lint_roller (~> 1.1.0)
+      parallel (~> 1.10)
+      parser (>= 3.3.0.2)
+      rainbow (>= 2.2.2, < 4.0)
+      regexp_parser (>= 2.9.3, < 3.0)
+      rubocop-ast (>= 1.47.1, < 2.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (>= 2.4.0, < 4.0)
+    rubocop-ast (1.47.1)
+      parser (>= 3.3.7.2)
+      prism (~> 1.4)
+    ruby-progressbar (1.13.0)
+    securerandom (0.4.1)
+    sqlite3 (2.7.4)
+      mini_portile2 (~> 2.8.0)
+    sqlite3 (2.7.4-aarch64-linux-gnu)
+    sqlite3 (2.7.4-aarch64-linux-musl)
+    sqlite3 (2.7.4-arm-linux-gnu)
+    sqlite3 (2.7.4-arm-linux-musl)
+    sqlite3 (2.7.4-arm64-darwin)
+    sqlite3 (2.7.4-x86-linux-gnu)
+    sqlite3 (2.7.4-x86-linux-musl)
+    sqlite3 (2.7.4-x86_64-darwin)
+    sqlite3 (2.7.4-x86_64-linux-gnu)
+    sqlite3 (2.7.4-x86_64-linux-musl)
+    timeout (0.4.3)
+    tzinfo (2.0.6)
+      concurrent-ruby (~> 1.0)
+    unicode-display_width (3.2.0)
+      unicode-emoji (~> 4.1)
+    unicode-emoji (4.1.0)
+    uri (1.0.4)
+
+PLATFORMS
+  aarch64-linux-gnu
+  aarch64-linux-musl
+  arm-linux-gnu
+  arm-linux-musl
+  arm64-darwin
+  ruby
+  x86-linux-gnu
+  x86-linux-musl
+  x86_64-darwin
+  x86_64-linux-gnu
+  x86_64-linux-musl
+
+DEPENDENCIES
+  bundler (~> 2.7)
+  rake (~> 10.0)
+  rspec (~> 3.12, ~> 3.0)
+  rubocop
+  safe_migrations!
+  sqlite3 (~> 2.7)
+
+BUNDLED WITH
+   2.7.2
