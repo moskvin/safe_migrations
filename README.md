@@ -4,7 +4,8 @@ G'day, mate! Welcome to **SafeMigrations**, a ripper of a gem that makes your Ra
 
 ## Why SafeMigrations?
 
-Tired of migrations chucking a wobbly when tables or columns already exist? SafeMigrations wraps Rails migration methods with `safe_` prefixes (e.g., `safe_create_table`, `safe_add_column`) to check for existing schema elements before making changes. It hooks into Rails' `CommandRecorder` for automatic reversals in `change`-based migrations, keeping your database fair dinkum. **Warning**: Since it uses `CommandRecorder`, rollbacks may affect pre-existing schema elements—use with care or chuck in a `reversible` block for complex stuff.
+Tired of migrations chucking a wobbly when tables or columns already exist? SafeMigrations wraps Rails migration methods with `safe_` prefixes (e.g., `safe_create_table`, `safe_add_column`) to check for existing schema elements before making changes. It hooks into Rails' `CommandRecorder` for automatic reversals in `change`-based migrations, keeping your database fair dinkum. 
+**Warning**: Since it uses `CommandRecorder`, rollbacks may affect pre-existing schema elements—use with care or chuck in a `reversible` block for complex stuff.
 
 ## Features
 
@@ -85,7 +86,7 @@ Tests check idempotency (re-running migrations) and rollback behavior. Note the 
 
 ## Contributing
 
-Got a ripper idea or found a bug? Chuck us a pull request or bug report on GitHub at https://github.com/[USERNAME]/safe_migrations. We’re keen as mustard to make this gem top-notch!
+Got a ripper idea or found a bug? Chuck us a pull request or bug report on GitHub at https://github.com/moskvin/safe_migrations. We’re keen as mustard to make this gem top-notch!
 
 ## License
 
