@@ -2,6 +2,8 @@
 
 G'day, mate! Welcome to **SafeMigrations**, a ripper of a gem that makes your Rails migrations as safe as a kangaroo in the outback. With `safe_` prefixed methods, this gem ensures your database schema changes are idempotent—no dramas if you run 'em twice. Built to play nice with Rails' `CommandRecorder`, it auto-reverses your migrations in the `change` method, so you can crack on with building your app without worrying about dodgy rollbacks.
 
+[![Gem Version](https://badge.fury.io/rb/safe_migrations.svg)](https://badge.fury.io/rb/safe_migrations)
+
 ## Why SafeMigrations?
 
 Tired of migrations chucking a wobbly when tables or columns already exist? SafeMigrations wraps Rails migration methods with `safe_` prefixes (e.g., `safe_create_table`, `safe_add_column`) to check for existing schema elements before making changes. It hooks into Rails' `CommandRecorder` for automatic reversals in `change`-based migrations, keeping your database fair dinkum. 
