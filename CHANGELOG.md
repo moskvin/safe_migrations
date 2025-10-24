@@ -13,4 +13,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 - N/A (initial release)
 
-[1.0.0]: https://github.com/moskvin/safe_migrations/versions/1.0.0
+[1.0.0]: https://github.com/moskvin/safe_migrations/releases/tag/v1.0.0
