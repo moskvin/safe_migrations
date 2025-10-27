@@ -67,6 +67,16 @@ module SafeMigrations
       def safe_remove_foreign_key(from_table, to_table, **options)
         table_exists?(from_table) && table_exists?(to_table) && foreign_key_exists?(from_table, to_table, **options) && remove_foreign_key(from_table, to_table, **options)
       end
+
+      def safe_add_reference(table, ref_name, **)
+        return unless table_exists?(table)
+
+        column_exists?(table, "#{ref_name.to_s.singularize}_id") || add_reference(table, ref_name, **)
+      end
+
+      def safe_remove_reference(table, ref_name, **)
+        table_exists?(table) && column_exists?(table, "#{ref_name.to_s.singularize}_id") && remove_reference(table, ref_name, **options)
+      end
     end
   end
 end
