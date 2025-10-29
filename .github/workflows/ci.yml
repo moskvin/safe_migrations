@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ master ]
 
+# ------------------------------------------------------------
+#  Matrix definition – all DB‑specific fields live here
+# ------------------------------------------------------------
 jobs:
   test:
     strategy:
@@ -14,10 +17,6 @@ jobs:
         rails: [ '7.0', '7.1' ]
         db: [ sqlite3, postgresql, mysql ]
 
-        # -----------------------------------------------------------------
-        #  Define every service‑specific field **once** in `include`.
-        #  All values are plain YAML – no `${{ }}` inside `services`.
-        # -----------------------------------------------------------------
         include:
           # ---------- PostgresQL ----------
           - rails: '7.0'
@@ -79,19 +78,18 @@ jobs:
               --health-timeout 5s
               --health-retries 5
 
+    # --------------------------------------------------------
+    #  Runner & Service definition – **outside** the matrix
+    # --------------------------------------------------------
     runs-on: ubuntu-latest
-
-    # Run the job inside the Ruby Docker image
     container: ${{ matrix.ruby_image }}
 
-    # -----------------------------------------------------------------
-    #  Service definition – **no expressions** here.
-    # -----------------------------------------------------------------
     services:
       db:
         image: ${{ matrix.db_image }}
         env: ${{ matrix.db_env }}
-        ports: ${{ matrix.db_ports }}        # array from `include`
+        ports:
+          - ${{ matrix.db_ports[0] }}
         options: ${{ matrix.db_options }}
 
     env:
