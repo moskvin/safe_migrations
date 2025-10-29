@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ master ]
 
-# ------------------------------------------------------------
-#  Matrix definition – all DB‑specific fields live here
-# ------------------------------------------------------------
 jobs:
   test:
     strategy:
@@ -23,8 +20,6 @@ jobs:
             db: postgresql
             ruby_image: ruby:3.2
             db_image: postgres:15
-            db_env:
-              POSTGRES_PASSWORD: postgres
             db_ports:
               - 5432:5432
             db_options: >-
@@ -37,8 +32,6 @@ jobs:
             db: postgresql
             ruby_image: ruby:3.2
             db_image: postgres:15
-            db_env:
-              POSTGRES_PASSWORD: postgres
             db_ports:
               - 5432:5432
             db_options: >-
@@ -52,9 +45,6 @@ jobs:
             db: mysql
             ruby_image: ruby:3.2
             db_image: mysql:8
-            db_env:
-              MYSQL_ROOT_PASSWORD: root
-              MYSQL_DATABASE: test
             db_ports:
               - 3306:3306
             db_options: >-
@@ -67,9 +57,6 @@ jobs:
             db: mysql
             ruby_image: ruby:3.2
             db_image: mysql:8
-            db_env:
-              MYSQL_ROOT_PASSWORD: root
-              MYSQL_DATABASE: test
             db_ports:
               - 3306:3306
             db_options: >-
@@ -87,17 +74,17 @@ jobs:
     services:
       db:
         image: ${{ matrix.db_image }}
-        env: ${{ matrix.db_env }}
+        env:
+          POSTGRES_PASSWORD: ${{ matrix.db == 'postgresql' && 'postgres' || '' }}
+          MYSQL_ROOT_PASSWORD: ${{ matrix.db == 'mysql' && 'root' || '' }}
+          MYSQL_DATABASE: ${{ matrix.db == 'mysql' && 'test' || '' }}
         ports:
           - ${{ matrix.db_ports[0] }}
         options: ${{ matrix.db_options }}
 
     env:
       RAILS_VERSION: ${{ matrix.rails }}
-      DATABASE_URL: >-
-        ${{ matrix.db == 'sqlite3' && 'sqlite3::memory:' ||
-            matrix.db == 'postgresql' && 'postgresql://postgres:postgres@localhost:5432/test' ||
-            matrix.db == 'mysql' && 'mysql2://root:root@localhost:3306/test' }}
+      DATABASE_URL: ${{ matrix.db == 'sqlite3' && 'sqlite3::memory:' || matrix.db == 'postgresql' && 'postgresql://postgres:postgres@localhost:5432/test' || 'mysql2://root:root@localhost:3306/test' }}
 
     steps:
       - uses: actions/checkout@v4
