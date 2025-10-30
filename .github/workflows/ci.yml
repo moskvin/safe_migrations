@@ -64,7 +64,7 @@ jobs:
       - name: Install dependencies
         run: |
           gem install bundler
-          bundle add rails -v "~> ${matrix.rails}" --skip-install
+          bundle add rails -v "~> ${{ matrix.rails }}" --skip-install
           bundle install
 
       - name: Prepare database
