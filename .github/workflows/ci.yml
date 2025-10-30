@@ -2,106 +2,86 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ master ]
 
 jobs:
   test:
+    runs-on: ubuntu-latest
+
     strategy:
       fail-fast: false
       matrix:
-        rails: [ '7.0', '7.1' ]
-        db: [ sqlite3, postgresql, mysql ]
-
-        include:
-          # ---------- PostgresQL ----------
-          - rails: '7.0'
-            db: postgresql
-            ruby_image: ruby:3.2
-            db_image: postgres:15
-            db_ports:
-              - 5432:5432
-            db_options: >-
-              --health-cmd pg_isready
-              --health-interval 10s
-              --health-timeout 5s
-              --health-retries 5
-
-          - rails: '7.1'
-            db: postgresql
-            ruby_image: ruby:3.2
-            db_image: postgres:15
-            db_ports:
-              - 5432:5432
-            db_options: >-
-              --health-cmd pg_isready
-              --health-interval 10s
-              --health-timeout 5s
-              --health-retries 5
-
-          # ---------- MySQL ----------
-          - rails: '7.0'
-            db: mysql
-            ruby_image: ruby:3.2
-            db_image: mysql:8
-            db_ports:
-              - 3306:3306
-            db_options: >-
-              --health-cmd="mysqladmin ping -h localhost -P 3306 -uroot -proot"
-              --health-interval 10s
-              --health-timeout 5s
-              --health-retries 5
-
-          - rails: '7.1'
-            db: mysql
-            ruby_image: ruby:3.2
-            db_image: mysql:8
-            db_ports:
-              - 3306:3306
-            db_options: >-
-              --health-cmd="mysqladmin ping -h localhost -P 3306 -uroot -proot"
-              --health-interval 10s
-              --health-timeout 5s
-              --health-retries 5
-
-    # --------------------------------------------------------
-    #  Runner & Service definition – **outside** the matrix
-    # --------------------------------------------------------
-    runs-on: ubuntu-latest
-    container: ${{ matrix.ruby_image }}
+        ruby: [3.2]
+        rails: ["7.0", "7.1"]
+        db: [sqlite, postgres, mysql]
 
     services:
-      db:
-        image: ${{ matrix.db_image }}
+      postgres:
+        image: postgres:15
+        ports: [5432:5432]
         env:
-          POSTGRES_PASSWORD: ${{ matrix.db == 'postgresql' && 'postgres' || '' }}
-          MYSQL_ROOT_PASSWORD: ${{ matrix.db == 'mysql' && 'root' || '' }}
-          MYSQL_DATABASE: ${{ matrix.db == 'mysql' && 'test' || '' }}
-        ports:
-          - ${{ matrix.db_ports[0] }}
-        options: ${{ matrix.db_options }}
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+      mysql:
+        image: mysql:8
+        ports: [3306:3306]
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: safe_migrations_test
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -proot"
+          --health-interval=5s
+          --health-timeout=10s
+          --health-retries=5
 
     env:
-      RAILS_VERSION: ${{ matrix.rails }}
-      DATABASE_URL: ${{ matrix.db == 'sqlite3' && 'sqlite3::memory:' || matrix.db == 'postgresql' && 'postgresql://postgres:postgres@localhost:5432/test' || 'mysql2://root:root@localhost:3306/test' }}
+      RAILS_ENV: test
+      BUNDLE_JOBS: 4
+      BUNDLE_RETRY: 3
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: safe_migrations_test
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: safe_migrations_test
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.2'
+          ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
 
       - name: Install dependencies
         run: |
           gem install bundler
-          bundle install --jobs 4 --retry 3
+          bundle add rails -v "~> ${matrix.rails}" --skip-install
+          bundle install
 
-      - name: Create / migrate test DB
-        run: bundle exec rails db:create db:migrate RAILS_ENV=test
+      - name: Prepare database
+        run: |
+          case ${{ matrix.db }} in
+            sqlite)
+              export DATABASE_URL="sqlite3::memory:"
+              ;;
+            postgres)
+              export DATABASE_URL="postgres://postgres:postgres@localhost:5432/safe_migrations_test"
+              ;;
+            mysql)
+              export DATABASE_URL="mysql2://root:root@127.0.0.1:3306/safe_migrations_test"
+              ;;
+          esac
+
+          echo "DATABASE_URL=$DATABASE_URL" >> $GITHUB_ENV
 
       - name: Run specs
         run: bundle exec rspec
