@@ -14,7 +14,7 @@ jobs:
       matrix:
         ruby: [3.2]
         rails: ["7.0", "7.1"]
-        db: [sqlite, postgres, mysql]
+        db: [sqlite, postgres, mysql, mariadb]
 
     services:
       postgres:
@@ -37,6 +37,18 @@ jobs:
           MYSQL_DATABASE: safe_migrations_test
         options: >-
           --health-cmd="mysqladmin ping -h 127.0.0.1 -proot"
+          --health-interval=5s
+          --health-timeout=10s
+          --health-retries=5
+
+      mariadb:
+        image: mariadb:latest
+        ports: [3307:3306]
+        env:
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_DATABASE: safe_migrations_test
+        options: >-
+          --health-cmd="healthcheck.sh --connect"
           --health-interval=5s
           --health-timeout=10s
           --health-retries=5
@@ -78,6 +90,9 @@ jobs:
               ;;
             mysql)
               export DATABASE_URL="mysql2://root:root@127.0.0.1:3306/safe_migrations_test"
+              ;;
+            mariadb)
+              export DATABASE_URL="mysql2://root:root@127.0.0.1:3307/safe_migrations_test"
               ;;
           esac
 
