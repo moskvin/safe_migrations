@@ -75,7 +75,25 @@ module SafeMigrations
       end
 
       def safe_remove_reference(table, ref_name, **)
-        table_exists?(table) && column_exists?(table, "#{ref_name.to_s.singularize}_id") && remove_reference(table, ref_name, **options)
+        table_exists?(table) && column_exists?(table, "#{ref_name.to_s.singularize}_id") && remove_reference(table, ref_name, **)
+      end
+
+      def check_constraint_exists?(table_name, **options)
+        if !options.key?(:name) && !options.key?(:expression)
+          raise ArgumentError, 'At least one of :name or :expression must be supplied'
+        end
+
+        check_constraint_for(table_name, **options).present?
+      end
+
+      def safe_add_check_constraint(table, condition, name:, **)
+        return unless table_exists?(table)
+
+        check_constraint_exists?(table, name:) || add_check_constraint(table, condition, name:, **)
+      end
+
+      def safe_remove_check_constraint(table, condition, name:, **)
+        table_exists?(table) && check_constraint_exists?(table, name:) && remove_check_constraint(table, condition, name:, **)
       end
     end
   end

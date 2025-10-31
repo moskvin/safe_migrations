@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    safe_migrations (1.0.2)
+    safe_migrations (1.0.3)
       activerecord (>= 7.0)
 
 GEM

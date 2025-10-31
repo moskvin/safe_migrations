@@ -18,6 +18,8 @@ module SafeMigrations
       safe_change_column_null
       safe_add_reference
       safe_remove_reference
+      safe_add_check_constraint
+      safe_remove_check_constraint
     ].freeze
 
     SAFE_REVERSIBLE_MAP = {
@@ -31,7 +33,8 @@ module SafeMigrations
       safe_add_column_and_index: :safe_remove_column_and_index,
       safe_remove_column_and_index: :safe_add_column_and_index,
       safe_change_column_null: :safe_change_column_null,
-      safe_add_reference: :safe_remove_reference
+      safe_add_reference: :safe_remove_reference,
+      safe_add_check_constraint: :safe_remove_check_constraint
     }.freeze
 
     def self.apply

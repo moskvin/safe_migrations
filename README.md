@@ -14,7 +14,7 @@ Tired of migrations chucking a wobbly when tables or columns already exist? Safe
 
 - **Idempotent Migrations**: `safe_create_table`, `safe_add_column`, `safe_add_index`, and more only run if needed.
 - **Auto-Reversal**: Integrates with Rails' `CommandRecorder` to invert `safe_` methods (e.g., `safe_create_table` → `safe_drop_table`) in `change` rollbacks.
-- **Rails 7.2+ Ready**: Built for ActiveRecord 7.2, with support for modern Ruby 3.2.
+- **Rails 7.0+ Ready**: Built for ActiveRecord 7.0, with support for modern Ruby 3.2.
 - **Aussie Spirit**: Crafted with a bit of outback grit to keep your migrations smooth as a cold one on a summer arvo.
 
 ## Installation
