@@ -2,6 +2,8 @@
 
 G'day, mate! Welcome to **SafeMigrations**, a ripper of a gem that makes your Rails migrations as safe as a kangaroo in the outback. With `safe_` prefixed methods, this gem ensures your database schema changes are idempotent—no dramas if you run 'em twice. Built to play nice with Rails' `CommandRecorder`, it auto-reverses your migrations in the `change` method, so you can crack on with building your app without worrying about dodgy rollbacks.
 
+![safe-pg-migrations](./logo.jpeg)
+
 [![Gem Version](https://badge.fury.io/rb/safe_migrations.svg)](https://badge.fury.io/rb/safe_migrations)
 [![CI](https://github.com/moskvin/safe_migrations/actions/workflows/ci.yml/badge.svg)](https://github.com/moskvin/safe_migrations/actions)
 
