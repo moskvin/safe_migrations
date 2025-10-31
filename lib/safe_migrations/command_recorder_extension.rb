@@ -33,6 +33,7 @@ module SafeMigrations
       safe_add_column_and_index: :safe_remove_column_and_index,
       safe_remove_column_and_index: :safe_add_column_and_index,
       safe_change_column_null: :safe_change_column_null,
+      safe_rename_column: :safe_rename_column,
       safe_add_reference: :safe_remove_reference,
       safe_add_check_constraint: :safe_remove_check_constraint
     }.freeze
@@ -58,12 +59,10 @@ module SafeMigrations
           [:safe_rename_column, [table, new_col, old_col]]
         end
 
-        # Special case for safe_change_column (needs type tracking)
-        def invert_safe_change_column(args)
-          table, column, type, options = args
-          # If column existed, invert to original type (not tracked, so warn)
-          # If column was added, invert to remove
-          [:safe_remove_column, [table, column, type, options]]
+        # Special case for safe_change_column_null (needs invert value)
+        def invert_safe_change_column_null(args)
+          table, column, value = args
+          [:safe_change_column_null, [table, column, !value]]
         end
       end
     end
