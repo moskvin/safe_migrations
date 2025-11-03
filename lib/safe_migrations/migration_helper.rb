@@ -95,6 +95,12 @@ module SafeMigrations
       def safe_remove_check_constraint(table, condition, name:, **)
         table_exists?(table) && check_constraint_exists?(table, name:) && remove_check_constraint(table, condition, name:, **)
       end
+
+      def safe_change_column_default(table, column, default_or_changes)
+        return unless table_exists?(table)
+
+        column_exists?(table, column) && change_column_default(table, column, default_or_changes)
+      end
     end
   end
 end
