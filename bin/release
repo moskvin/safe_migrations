@@ -33,7 +33,9 @@ elif [[ $# -gt 0 ]]; then
 fi
 
 if [[ -n "$(git status --porcelain)" ]]; then
-  echo "Working tree is not clean. Commit or stash changes before releasing." >&2
+  echo "Working tree is not clean:" >&2
+  git status --short >&2
+  echo "Commit or stash changes before releasing. Plain git stash excludes untracked files; use git stash -u to include them." >&2
   exit 1
 fi
 
