@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+
+root_dir=$(cd "$(dirname "$0")/.." && pwd)
+cd "$root_dir"
+
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+  cat <<'USAGE'
+Usage: bin/release [--skip-checks]
+
+Runs guardrails before releasing:
+1. Requires a clean git worktree
+2. Requires current branch to match origin/HEAD (or local HEAD fallback)
+3. Requires branch to be in sync with origin
+4. Runs test + lint checks (unless --skip-checks)
+5. Pushes the branch, then runs `bundle exec rake release`
+USAGE
+  exit 0
+fi
+
+skip_checks=false
+if [[ $# -gt 1 ]]; then
+  echo "Expected at most one option. Use --help for usage." >&2
+  exit 1
+fi
+
+if [[ "${1:-}" == "--skip-checks" ]]; then
+  skip_checks=true
+elif [[ $# -gt 0 ]]; then
+  echo "Unknown option: $1" >&2
+  exit 1
+fi
+
+if [[ -n "$(git status --porcelain)" ]]; then
+  echo "Working tree is not clean. Commit or stash changes before releasing." >&2
+  exit 1
+fi
+
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+default_branch=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's|^origin/||')
+default_branch=${default_branch:-$current_branch}
+
+if [[ "$current_branch" != "$default_branch" ]]; then
+  echo "Release must run from '$default_branch' (current: '$current_branch')." >&2
+  exit 1
+fi
+
+echo "Fetching latest refs from origin..."
+git fetch origin
+
+local_sha=$(git rev-parse @)
+remote_sha=$(git rev-parse "origin/$default_branch")
+base_sha=$(git merge-base @ "origin/$default_branch")
+
+if [[ "$local_sha" == "$remote_sha" ]]; then
+  echo "Branch is in sync with origin/$default_branch."
+elif [[ "$local_sha" == "$base_sha" ]]; then
+  echo "Local branch is behind origin/$default_branch. Pull/rebase first." >&2
+  exit 1
+elif [[ "$remote_sha" == "$base_sha" ]]; then
+  echo "Local branch is ahead of origin/$default_branch and will be pushed."
+else
+  echo "Local and origin/$default_branch have diverged. Rebase/merge first." >&2
+  exit 1
+fi
+
+version=$(ruby -e 'require_relative "lib/safe_migrations/version"; puts SafeMigrations::VERSION')
+tag="v$version"
+
+if git rev-parse "$tag" >/dev/null 2>&1 || git ls-remote --tags origin "$tag" | grep -q "$tag"; then
+  echo "Tag '$tag' already exists locally or on origin. Bump version first." >&2
+  exit 1
+fi
+
+if [[ "$skip_checks" == "false" ]]; then
+  echo "Running specs..."
+  bundle exec rspec
+
+  echo "Running RuboCop..."
+  bundle exec rubocop
+fi
+
+echo "Pushing branch '$default_branch' first..."
+git push origin "$default_branch"
+
+echo "Releasing gem with rake task..."
+bundle exec rake release
+
+echo "Release complete: $tag"

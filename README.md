@@ -133,9 +133,23 @@ To install the gem locally:
 $ bundle exec rake install
 ```
 
-To release a new version:
-1. Update the version in `lib/safe_migrations/version.rb`.
-2. Run `bundle exec rake release` to tag the version, push to Git, and ship the gem to [RubyGems.org](https://rubygems.org).
+To release a new version, update `lib/safe_migrations/version.rb` and the changelog,
+update the lockfile, then commit your changes and run:
+
+```bash
+bundle exec rake release:guarded
+# Equivalent:
+bin/release
+```
+
+The helper requires a clean worktree and the default branch (`origin/HEAD`, falling
+back to the current branch). It fetches origin, rejects a behind or diverged branch,
+and checks that the version tag does not already exist locally or remotely.
+It then runs specs and RuboCop, pushes the branch, and invokes Bundler's
+`bundle exec rake release` to build, tag, push, and publish to RubyGems.
+
+Use `bin/release --skip-checks` to skip specs and lint while retaining the git and
+version checks. `bin/release --help` displays usage without releasing anything.
 
 ## Testing
 
