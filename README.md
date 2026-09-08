@@ -61,6 +61,64 @@ end
 - **Rolling Back**: `rails db:rollback` inverts to `safe_drop_table`, `safe_remove_column`, `safe_remove_index` (in reverse order).
 - **Heads Up**: If a table exists before the migration, `safe_create_table` skips it, but rollback may still call `safe_drop_table`. For critical cases, use `reversible`:
 
+### Dry runs (v1.1+)
+
+Declare `dry_runnable` once to wrap the entire upward migration automatically:
+
+```ruby
+class CleanupBrokenLinks < ActiveRecord::Migration[8.0]
+  dry_runnable
+
+  def up
+    # All database writes here run normally
+    Link.where(broken: true).destroy_all 
+  end
+
+  def down
+    raise ActiveRecord::IrreversibleMigration
+  end
+end
+```
+
+```bash
+DRY_RUN=1 bundle exec rails db:migrate:up VERSION=20260817090000
+# Apply for real:
+bundle exec rails db:migrate:up VERSION=20260817090000
+```
+
+With `DRY_RUN=1`, the body executes real SQL so counts and reports reflect real work.
+An `ActiveRecord::Rollback` then reaches Rails' migration transaction, undoing the
+writes and skipping the migration-version record: the migration remains pending.
+Unset `DRY_RUN` (or set it to `0` or `false`) for normal execution.
+
+The declaration is inherited and also supports `change` on upward execution;
+`down` and reversal of `change` are unaffected. Only opted-in migrations are wrapped.
+For existing migrations, the block form remains available:
+
+```ruby
+def up
+  dry_runnable do
+    # Database writes and reporting.
+  end
+end
+```
+
+`dry_run?` exposes the environment flag. Dry runs require Rails' migration runner,
+an active transaction, and an adapter supporting DDL transactions (such as PostgreSQL
+or SQLite). They reject `disable_ddl_transaction!` and unsupported adapters before
+executing the wrapped body. Direct calls to `up` bypass the class-level wrapper.
+Do not rescue `ActiveRecord::Rollback` or swallow it in an enclosing transaction
+around the block helper: it must reach the migration runner to leave the version pending.
+
+Rollback covers writes on the migration connection, not API calls, files, Ruby state,
+or writes on other database connections. Database sequences may still advance.
+Prefer targeting one migration: a full migration run can continue to later migrations
+after rollback, and migrations without the option still apply normally.
+
+When moving from an application-defined helper, remove its `dry_runnable` and
+`dry_run?` definitions so the gem supplies them. Application-specific helpers such
+as PaperTrail's `setup_version` stay in the application.
+
 ## Development
 
 No worries, mate! To get started:

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    safe_migrations (1.0.4)
+    safe_migrations (1.1.0)
       activerecord (>= 7.0)
 
 GEM
@@ -40,7 +40,9 @@ GEM
     lint_roller (1.1.0)
     logger (1.7.0)
     mini_portile2 (2.8.9)
-    minitest (5.26.0)
+    minitest (6.0.6)
+      drb (~> 2.0)
+      prism (~> 1.5)
     parallel (1.27.0)
     parser (3.3.9.0)
       ast (~> 2.4.1)
@@ -96,7 +98,7 @@ GEM
       concurrent-ruby (~> 1.0)
     unicode-display_width (3.2.0)
       unicode-emoji (~> 4.1)
-    unicode-emoji (4.1.0)
+    unicode-emoji (4.2.0)
     uri (1.0.4)
 
 PLATFORMS
