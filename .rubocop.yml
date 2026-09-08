@@ -1,2 +1,11 @@
+plugins:
+  - rubocop-rake
+  - rubocop-rspec
+
 AllCops:
   TargetRubyVersion: 3.2
+  NewCops: enable
+
+# Migration integration examples verify a complete transaction lifecycle.
+RSpec/ExampleLength:
+  Max: 15

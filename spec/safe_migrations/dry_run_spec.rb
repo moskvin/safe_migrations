@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe SafeMigrations::DryRun do
+RSpec.describe SafeMigrations::DryRun, :aggregate_failures do
   let(:connection) { ActiveRecord::Base.connection }
   let(:migration_class) do
     Class.new(ActiveRecord::Migration[7.2]) do
@@ -15,7 +15,7 @@ RSpec.describe SafeMigrations::DryRun do
       end
     end
   end
-  let(:migration) { migration_class.new('DryRunExample', 202609080001) }
+  let(:migration) { migration_class.new('DryRunExample', 202_609_080_001) }
   let(:schema_migration) { connection.pool.schema_migration }
 
   def run(direction = :up)
@@ -28,7 +28,7 @@ RSpec.describe SafeMigrations::DryRun do
   end
 
   around do |example|
-    previous = ENV['DRY_RUN']
+    previous = ENV.fetch('DRY_RUN', nil)
     ENV['DRY_RUN'] = '1'
     example.run
   ensure
@@ -36,13 +36,14 @@ RSpec.describe SafeMigrations::DryRun do
   end
 
   before { connection.create_table(:dry_run_items) { |t| t.integer :value } }
+
   after do
     connection.drop_table(:dry_run_items)
     schema_migration.delete_version(migration.version.to_s)
   end
 
   it 'rolls back real writes, leaves the version pending, and can subsequently apply' do
-    expect(migration).to receive(:execute).with(/INSERT/).twice.and_wrap_original do |method, *args|
+    allow(migration).to receive(:execute).with(/INSERT/).and_wrap_original do |method, *args|
       method.call(*args)
       expect(count).to eq(1)
     end
@@ -54,6 +55,7 @@ RSpec.describe SafeMigrations::DryRun do
     run
     expect(count).to eq(1)
     expect(schema_migration.versions).to include(migration.version.to_s)
+    expect(migration).to have_received(:execute).with(/INSERT/).twice
   end
 
   it 'wraps change and rolls back schema changes' do

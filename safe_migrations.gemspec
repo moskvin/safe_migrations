@@ -11,7 +11,10 @@ Gem::Specification.new do |spec|
   spec.email         = ['nikolay.moskvin@gmail.com']
 
   spec.summary       = 'Idempotent migration helpers for Rails with safe, reversible operations.'
-  spec.description   = "SafeMigrations enhances Rails migrations with safe_ prefixed methods that prevent errors by checking for existing schema elements before execution. It integrates with Rails' CommandRecorder for automatic reversal in change-based migrations, ensuring safe and reliable database schema management."
+  spec.description   = 'SafeMigrations enhances Rails migrations with safe_ prefixed methods that prevent errors ' \
+                       'by checking for existing schema elements before execution. It integrates with Rails\' ' \
+                       'CommandRecorder for automatic reversal in change-based migrations, ensuring safe and ' \
+                       'reliable database schema management.'
   spec.homepage      = 'https://github.com/moskvin/safe_migrations'
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
@@ -22,9 +25,10 @@ Gem::Specification.new do |spec|
     spec.metadata['homepage_uri'] = spec.homepage
     spec.metadata['source_code_uri'] = 'https://github.com/moskvin/safe_migrations'
     spec.metadata['changelog_uri'] = 'https://github.com/moskvin/safe_migrations/blob/master/CHANGELOG.md'
+    spec.metadata['rubygems_mfa_required'] = 'true'
   else
     raise 'RubyGems 2.0 or newer is required to protect against ' \
-      'public gem pushes.'
+          'public gem pushes.'
   end
 
   # Specify which files should be added to the gem when it is released.
@@ -39,9 +43,4 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 3.2'
 
   spec.add_dependency 'activerecord', '>= 7.0'
-
-  spec.add_development_dependency 'bundler', '~> 2.7'
-  spec.add_development_dependency 'rake', '~> 13.0'
-  spec.add_development_dependency 'rspec', '~> 3.0'
-  spec.add_development_dependency 'rubocop'
 end

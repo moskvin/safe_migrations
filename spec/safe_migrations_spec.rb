@@ -18,7 +18,7 @@ def index_exists?(table, column)
   ActiveRecord::Base.connection.index_exists?(table, column)
 end
 
-RSpec.describe SafeMigrations do
+RSpec.describe SafeMigrations, :aggregate_failures do
   let(:migration_class) do
     Class.new(ActiveRecord::Migration[7.2]) do
       def change
